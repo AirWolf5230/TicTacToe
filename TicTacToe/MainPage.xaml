@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="TicTacToe.MainPage"
+    x:Name="RootPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Крестики-нолики"
+    BackgroundColor="#F4F6FA">
+
+    <ContentPage.Resources>
+        <Style TargetType="Entry">
+            <Setter Property="TextColor" Value="#111111" />
+            <Setter Property="PlaceholderColor" Value="#737373" />
+            <Setter Property="BackgroundColor" Value="#F6F8FC" />
+        </Style>
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="#283D67" />
+            <Setter Property="TextColor" Value="White" />
+            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="Padding" Value="18,14" />
+        </Style>
+        <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+            <Setter Property="BackgroundColor" Value="#E7ECF5" />
+            <Setter Property="TextColor" Value="#283D67" />
+        </Style>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="BackgroundColor" Value="White" />
+            <Setter Property="Stroke" Value="#E8ECF3" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="Padding" Value="20" />
+            <Setter Property="StrokeShape">
+                <Setter.Value>
+                    <RoundRectangle CornerRadius="20" />
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid>
+        <ScrollView IsVisible="{Binding IsMenuVisible}">
+            <VerticalStackLayout Padding="24,34" Spacing="22" VerticalOptions="Center">
+                <Label Text="TIC TAC TOE" FontSize="13" FontAttributes="Bold" TextColor="#65769A" CharacterSpacing="2" HorizontalTextAlignment="Center" />
+                <Label Text="Крестики-нолики" FontSize="30" FontAttributes="Bold" TextColor="#1B2B4B" HorizontalTextAlignment="Center" />
+                <Label Text="{Binding PlayerName, StringFormat='Игрок: {0}'}" FontSize="14" TextColor="#65738C" HorizontalTextAlignment="Center" />
+
+                <Button Text="Локальный сервер / Wi-Fi" Style="{StaticResource SecondaryButton}" Command="{Binding OpenLocalServerCommand}" />
+                <Button Text="Локальная игра на устройстве" Style="{StaticResource SecondaryButton}" Command="{Binding StartLocalGameCommand}" />
+                <Button Text="Статистика побед" Style="{StaticResource SecondaryButton}" Command="{Binding OpenStatisticsCommand}" />
+                <Button Text="Имя игрока" Style="{StaticResource SecondaryButton}" Command="{Binding OpenProfileCommand}" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <ScrollView IsVisible="{Binding IsConnectVisible}">
+            <VerticalStackLayout Padding="22" Spacing="16">
+                <Button Text="‹  Главное меню" Style="{StaticResource SecondaryButton}" Command="{Binding BackToMenuCommand}" HorizontalOptions="Start" />
+                <Label Text="Подключиться" FontSize="27" FontAttributes="Bold" TextColor="#1B2B4B" />
+                <Label Text="Введите IP-адрес или доменное имя игрового сервера." FontSize="14" TextColor="#65738C" />
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Entry Placeholder="IP-адрес или домен" Text="{Binding ServerAddress}" Keyboard="Url" BackgroundColor="#F6F8FC" />
+                        <Entry Placeholder="Порт сервера" Text="{Binding PortText}" Keyboard="Numeric" BackgroundColor="#F6F8FC" />
+                        <Button Text="Подключиться" Style="{StaticResource ActionButton}" Command="{Binding JoinRoomCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <ScrollView IsVisible="{Binding IsLocalServerVisible}">
+            <VerticalStackLayout Padding="22" Spacing="16">
+                <Button Text="‹  Главное меню" Style="{StaticResource SecondaryButton}" Command="{Binding BackToMenuCommand}" HorizontalOptions="Start" />
+                <Label Text="Локальный сервер" FontSize="27" FontAttributes="Bold" TextColor="#1B2B4B" />
+                <Label Text="Создайте комнату на этом телефоне либо найдите сервер в вашей Wi-Fi-сети." FontSize="14" TextColor="#65738C" />
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Button Text="Создать сервер на этом телефоне" Style="{StaticResource ActionButton}" Command="{Binding CreateWifiRoomCommand}" />
+                        <Label Text="Соперник подключится к этому адресу." FontSize="12" TextColor="#8490A5" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Подключиться к локальному серверу" FontSize="17" FontAttributes="Bold" TextColor="#1B2B4B" />
+                        <Entry Placeholder="IP-адрес или домен" Text="{Binding ServerAddress}" Keyboard="Url" BackgroundColor="#F6F8FC" />
+                        <Entry Placeholder="Порт сервера" Text="{Binding PortText}" Keyboard="Numeric" BackgroundColor="#F6F8FC" />
+                        <CollectionView ItemsSource="{Binding DiscoveredServers}" SelectionMode="None" MaximumHeightRequest="160">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Text="{Binding DisplayAddress}"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectServerCommand}"
+                                            CommandParameter="{Binding .}" />
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                        <Button Text="Подключиться" Style="{StaticResource ActionButton}" Command="{Binding JoinRoomCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <ScrollView IsVisible="{Binding IsStatisticsVisible}">
+            <VerticalStackLayout Padding="22" Spacing="16">
+                <Button Text="‹  Главное меню" Style="{StaticResource SecondaryButton}" Command="{Binding BackToMenuCommand}" HorizontalOptions="Start" />
+                <Label Text="Статистика побед" FontSize="27" FontAttributes="Bold" TextColor="#1B2B4B" />
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="На этом устройстве" FontSize="17" FontAttributes="Bold" TextColor="#1B2B4B" />
+                        <Label Text="{Binding StatisticsText}" TextColor="#52627B" FontSize="13" />
+                        <CollectionView ItemsSource="{Binding History}" SelectionMode="None" EmptyView="Завершенных матчей пока нет." MaximumHeightRequest="260">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="*,Auto" Padding="0,8" RowDefinitions="Auto,Auto">
+                                        <Label Text="{Binding Participants}" TextColor="#273754" FontSize="13" />
+                                        <Label Grid.Column="1" Text="{Binding ResultDisplay}" TextColor="#355A9A" FontAttributes="Bold" FontSize="12" />
+                                        <Label Grid.Row="1" Text="{Binding StartedAt, StringFormat='{0:dd.MM.yyyy HH:mm}'}" TextColor="#8490A5" FontSize="11" />
+                                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding ConnectionMode}" TextColor="#8490A5" FontSize="11" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <ScrollView IsVisible="{Binding IsProfileVisible}">
+            <VerticalStackLayout Padding="22" Spacing="16">
+                <Button Text="‹  Главное меню" Style="{StaticResource SecondaryButton}" Command="{Binding BackToMenuCommand}" HorizontalOptions="Start" IsVisible="{Binding CanLeaveProfile}" />
+                <Label Text="Имя игрока" FontSize="27" FontAttributes="Bold" TextColor="#1B2B4B" />
+                <Label Text="Введите ник, который будет отображаться в игре. Он сохраняется только на этом устройстве." FontSize="14" TextColor="#283D67" IsVisible="{Binding IsPlayerNameRequired}" />
+                <Label Text="Измените ник, который увидит соперник в следующей игре." FontSize="14" TextColor="#65738C" IsVisible="{Binding CanLeaveProfile}" />
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Entry Placeholder="Ник (1–24 символа)" Text="{Binding PlayerName}" MaxLength="24" BackgroundColor="#F6F8FC" />
+                        <Button Text="Сохранить и продолжить" Style="{StaticResource ActionButton}" Command="{Binding SavePlayerNameCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <ScrollView IsVisible="{Binding IsGameVisible}">
+            <VerticalStackLayout Padding="22,20,22,32" Spacing="18">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Button Text="‹  Меню" Style="{StaticResource SecondaryButton}" Command="{Binding BackToMenuCommand}" />
+                    <Label Grid.Column="1" Text="{Binding PlayerName, StringFormat='Игрок: {0}'}" VerticalTextAlignment="Center" HorizontalTextAlignment="End" TextColor="#65738C" />
+                </Grid>
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Игровое поле" FontSize="20" FontAttributes="Bold" TextColor="#1B2B4B" HorizontalTextAlignment="Center" />
+                        <Label Text="{Binding GameStatusText}" FontSize="15" TextColor="#52627B" HorizontalTextAlignment="Center" />
+                        <Label Text="{Binding WaitingServerText}" FontSize="13" TextColor="#65738C" HorizontalTextAlignment="Center" IsVisible="{Binding IsWaitingForOpponent}" />
+                        <Border BackgroundColor="#F4F6F8"
+                                Stroke="#E8ECF1"
+                                StrokeThickness="1"
+                                Padding="8"
+                                HorizontalOptions="Center">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="24" />
+                            </Border.StrokeShape>
+                            <CollectionView ItemsSource="{Binding Cells}"
+                                            HeightRequest="278"
+                                            SelectionMode="None"
+                                            BackgroundColor="Transparent">
+                                <CollectionView.ItemsLayout>
+                                    <GridItemsLayout Orientation="Vertical" Span="3" HorizontalItemSpacing="10" VerticalItemSpacing="10" />
+                                </CollectionView.ItemsLayout>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BackgroundColor="#E2E6EB"
+                                                Stroke="#D9DEE5"
+                                                StrokeThickness="1"
+                                                HeightRequest="86"
+                                                IsEnabled="{Binding IsEnabled}">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="18" />
+                                            </Border.StrokeShape>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                    Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.MakeMoveCommand}"
+                                                    CommandParameter="{Binding Index}" />
+                                            </Border.GestureRecognizers>
+                                            <Label Text="{Binding Value}"
+                                                   FontSize="48"
+                                                   FontAttributes="Bold"
+                                                   TextColor="#283D67"
+                                                   HorizontalTextAlignment="Center"
+                                                   VerticalTextAlignment="Center" />
+                                        </Border>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </Border>
+                        <Button Text="Выйти из комнаты" Style="{StaticResource SecondaryButton}" Command="{Binding LeaveRoomCommand}" IsVisible="{Binding HasRoom}" />
+                        <Button Text="Новая игра" Style="{StaticResource ActionButton}" Command="{Binding StartNewGameCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\TicTacToe\Data\AppDbContext.cs" Link="AppDbContext.cs" />
+    <Compile Include="..\TicTacToe\Data\Migrations\InitialCreate.cs" Link="Migrations\InitialCreate.cs" />
+    <Compile Include="..\TicTacToe\Data\Migrations\AddLocalAccounts.cs" Link="Migrations\AddLocalAccounts.cs" />
+    <Compile Include="..\TicTacToe\Data\Migrations\RemoveLocalAccounts.cs" Link="Migrations\RemoveLocalAccounts.cs" />
+    <Compile Include="..\TicTacToe\Data\Migrations\AppDbContextModelSnapshot.cs" Link="Migrations\AppDbContextModelSnapshot.cs" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.14" />
+    <ProjectReference Include="..\TicTacToe.Core\TicTacToe.Core.csproj" />
+  </ItemGroup>
+</Project>
